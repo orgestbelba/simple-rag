@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models import Article, get_db
 from app.schemas import ArticleOut, ArticleList, SearchRequest, SearchResult
 from app.services.embeddings import search_articles
+from app.services.rag import rag_search
 
 router = APIRouter()
 
@@ -57,3 +58,18 @@ async def stats(db: Session = Depends(get_db)):
 async def health():
     """Health check"""
     return {"status": "ok"}
+
+@router.post("/rag-search")
+async def rag_search_endpoint(
+    req: SearchRequest,
+    db: Session = Depends(get_db)
+):
+    """RAG-powered search with AI generation"""
+    result = await rag_search(req.query, db)
+    
+    return {
+        "query": result["query"],
+        "answer": result["answer"],
+        "sources": result["sources"],
+        "confidence": result["confidence"]
+    }
