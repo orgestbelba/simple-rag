@@ -4,7 +4,9 @@ from app.services.embeddings import search_articles
 from sqlalchemy.orm import Session
 from app.models import Article
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Try to use OpenAI, fall back to simple text generation
 try:
     llm = ChatOpenAI(
